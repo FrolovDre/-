@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Feature Matrix · MVP-F</title>
+  <meta name="description" content="ИИ-ассистент — Feature Matrix (Heatmap) MVP" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar" role="banner">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">◆</span>
+      <span class="title">Feature Matrix · MVP-F</span>
+    </div>
+
+    <nav class="kpis" aria-label="matrix KPIs">
+      <div class="kpi"><span>Completeness</span><strong id="kpi-completeness">—</strong></div>
+      <div class="kpi"><span>Evidence</span><strong id="kpi-evidence">—</strong></div>
+      <div class="kpi"><span>Last refresh</span><strong id="kpi-refresh">—</strong></div>
+      <div class="kpi"><span>Mode</span>
+        <button id="btn-heat-toggle" class="chip" title="H">Heatmap</button>
+      </div>
+    </nav>
+
+    <div class="actions">
+      <button id="btn-cmd" class="ghost" title="⌘/Ctrl+K">Команды</button>
+      <button id="btn-export" class="primary" title="X">Экспорт</button>
+      <button id="btn-theme" class="ghost" aria-label="Toggle theme" title="Тема">🌓</button>
+    </div>
+  </header>
+
+  <main class="layout" role="main">
+    <!-- Sidebar -->
+    <aside class="sidebar" aria-label="Primary">
+      <div class="segment-select">
+        <label for="segmentSelect">Сегмент</label>
+        <select id="segmentSelect" aria-label="Выбор сегмента"></select>
+      </div>
+
+      <nav class="primary-nav" aria-label="Primary Navigation">
+        <button data-view="matrix" class="nav-btn active">Matrix</button>
+        <button data-view="taxonomy" class="nav-btn">Taxonomy</button>
+        <button data-view="competitors" class="nav-btn">Competitors</button>
+        <button data-view="sources" class="nav-btn">Sources</button>
+        <button data-view="exports" class="nav-btn">Exports</button>
+        <button data-view="settings" class="nav-btn">Settings</button>
+      </nav>
+
+      <div class="shortcuts">
+        <h4>Шорткаты</h4>
+        <ul>
+          <li>⌘/Ctrl+K — Команды</li>
+          <li>H — Heatmap</li>
+          <li>E — Add Evidence</li>
+          <li>X — Export</li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Views -->
+    <section id="view-matrix" class="view active" aria-labelledby="matrixTitle">
+      <header class="view-header">
+        <h2 id="matrixTitle">Матрица фич × конкуренты</h2>
+        <div class="view-actions">
+          <button id="btn-add-feature" class="ghost">+ Фича</button>
+          <button id="btn-add-competitor" class="ghost">+ Конкурент</button>
+          <label class="switch"><input type="checkbox" id="filter-evidence"><span>Только с доказательствами</span></label>
+        </div>
+      </header>
+
+      <div class="matrix-wrap" role="region" aria-label="Feature Matrix">
+        <table id="matrix" class="matrix" aria-describedby="matrixTitle">
+          <thead id="matrix-thead"></thead>
+          <tbody id="matrix-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="view-taxonomy" class="view" aria-labelledby="taxonomyTitle">
+      <header class="view-header">
+        <h2 id="taxonomyTitle">Taxonomy (словарь фич)</h2>
+        <div class="view-actions">
+          <button id="btn-tax-add" class="ghost">+ Фича</button>
+        </div>
+      </header>
+      <div class="cards" id="taxonomy-cards"></div>
+    </section>
+
+    <section id="view-competitors" class="view" aria-labelledby="competitorsTitle">
+      <header class="view-header">
+        <h2 id="competitorsTitle">Конкуренты</h2>
+        <div class="view-actions">
+          <button id="btn-comp-add" class="ghost">+ Конкурент</button>
+        </div>
+      </header>
+      <div class="cards" id="competitor-cards"></div>
+    </section>
+
+    <section id="view-sources" class="view" aria-labelledby="sourcesTitle">
+      <header class="view-header">
+        <h2 id="sourcesTitle">Источники</h2>
+      </header>
+      <table class="sources" id="sources-table">
+        <thead>
+          <tr>
+            <th>Тип</th><th>Заголовок</th><th>URL/Ref</th><th>Свежесть</th><th>Allow</th><th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section id="view-exports" class="view" aria-labelledby="exportsTitle">
+      <header class="view-header">
+        <h2 id="exportsTitle">Экспорт</h2>
+      </header>
+      <div class="export-grid">
+        <div class="export-card">
+          <h3>CSV</h3>
+          <p>Выгрузка матрицы и доказательств в CSV-файлы.</p>
+          <button id="btn-export-csv" class="primary">Скачать CSV</button>
+        </div>
+        <div class="export-card">
+          <h3>Gamma Markdown</h3>
+          <p>Slide-ready Markdown (Executive, Heatmap summary, Evidence Appendix).</p>
+          <button id="btn-export-md" class="primary">Скачать .md</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-settings" class="view" aria-labelledby="settingsTitle">
+      <header class="view-header">
+        <h2 id="settingsTitle">Настройки</h2>
+      </header>
+      <div class="cards">
+        <div class="card">
+          <h3>Бренд-тема</h3>
+          <label>Цвет акцента <input type="color" id="brand-accent" value="#5b8cfe" /></label>
+        </div>
+        <div class="card">
+          <h3>Комплаенс</h3>
+          <label class="switch"><input type="checkbox" id="compliance-mode"><span>Только allowlist источники</span></label>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Evidence Drawer -->
+  <aside id="evidence-drawer" class="drawer" aria-label="Evidence drawer" aria-hidden="true">
+    <header class="drawer-head">
+      <h3>Доказательства</h3>
+      <button id="btn-close-drawer" class="icon" aria-label="Close">✕</button>
+    </header>
+    <div class="drawer-body">
+      <div class="drawer-meta" id="drawer-meta"></div>
+      <form id="evidence-form" class="evidence-form">
+        <label>Тип
+          <select id="ev-type">
+            <option value="url">URL</option>
+            <option value="quote">Цитата</option>
+            <option value="screenshot">Скрин</option>
+          </select>
+        </label>
+        <label>Заголовок <input id="ev-title" type="text" placeholder="Кратко" /></label>
+        <label>Ссылка/Текст <input id="ev-ref" type="text" placeholder="https://… или цитата" /></label>
+        <div class="form-actions">
+          <button type="submit" class="primary">Добавить</button>
+          <button type="button" id="btn-to-jira" class="ghost">Скопировать в Jira</button>
+        </div>
+      </form>
+
+      <ul id="evidence-list" class="evidence-list"></ul>
+    </div>
+  </aside>
+
+  <!-- Command Palette -->
+  <div id="cmd-palette" class="modal" aria-hidden="true" role="dialog" aria-label="Command palette">
+    <div class="modal-panel">
+      <input id="cmd-input" type="text" placeholder="Введите команду… (напр., add competitor)" aria-label="Command input" />
+      <ul id="cmd-list"></ul>
+    </div>
+  </div>
+
+  <!-- Toasts -->
+  <div id="toasts" aria-live="polite" aria-atomic="true" class="toasts"></div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
